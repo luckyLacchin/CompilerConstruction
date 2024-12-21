@@ -1,0 +1,35 @@
+PDefs. Program ::= [Def] ;
+terminator Def "" ;
+
+-- Definition with qualified constants (Definitions, 2)
+QCDef. Def ::= "using" QualConst ";" ;
+
+-- Variable Declarations (Statements, 2)
+SVDecl.  Stm ::= Type Id ";" ;
+SVDecls. Stm ::= Type Id "," [Id] ";" ;
+SVInits. Stm ::= Type Id "=" Exp ";" ; 
+
+-- Types
+Tint.    Type ::= "int" ;
+Tbool.   Type ::= "bool" ;
+Tchar.   Type ::= "char" ;
+Tdouble. Type ::= "double" ;
+Tvoid.   Type ::= "void" ;
+
+
+
+-- An identifier is a letter followed by a list of letters, digits and underscores
+-- Defined as regular expression, since use of apostroph not permitted in BNFC rules
+token Id (letter(letter | digit | '_')*) ;
+
+separator nonempty Id "," ;
+
+separator Exp "," ;
+terminator Stm "" ;
+
+coercions Exp 15 ;
+
+-- Ignored by C++ parser
+comment "#" ;
+comment "//" ;
+comment "/*" "*/" ;

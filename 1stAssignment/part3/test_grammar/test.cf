@@ -1,0 +1,70 @@
+PDef . Def ::= [Stm] ;
+
+-- Defs for Testing
+SStm . Stm ::= "stm" ";" ;
+EExp . Exp ::= "exp" ;
+TType . Type ::= "type" ;
+
+SExp . Stm ::= Exp ";" ;
+EId . Exp15 ::= Ident ;
+EInt . Exp15 ::= Integer ;
+EFloat . Exp15 ::= Float;
+
+-- While Statements
+SWhi . Stm ::= "while" "(" Exp ")" Stm ;
+
+-- Typedef Statements
+STDef . Stm ::= "typedef" Type Ident ";" ; 
+
+-- If Statements => 2 Shift Reduce Conflicts
+SIf . Stm ::= "if" "(" Exp ")" Stm ;
+SIfE . Stm ::= "if" "(" Exp ")" Stm Else ;
+SElIf . Else ::= "elif" "(" Exp ")" Stm Else ;
+SElse . Else ::= "else" Stm ;
+
+-- Statement Block
+SBlo . Stm ::= "{" [Stm] "}" ;
+
+-- Indexing
+EIdx . Exp14 ::= Ident "[" Integer "]" ;
+
+-- Function Call
+EFun . Exp14 ::= Ident "(" [Exp] ")";
+
+-- Structure Projection
+EProD . Exp14 ::= Exp14 "." Exp15 ;
+EProA . Exp14 ::= Exp14 "->" Exp15 ;
+
+-- Mult, Div, Remainder
+EMult . Exp12 ::= Exp12 "*" Exp13;
+EDiv . Exp12 ::= Exp12 "/" Exp13;
+ERem . Exp12 ::= Exp12 "%" Exp13;
+
+-- Add, Sub
+EAdd . Exp11 ::= Exp11 "+" Exp12;
+ESub . Exp11 ::= Exp11 "-" Exp12;
+
+-- Equal, Inequal
+EEqu . Exp ::= Exp "==" Exp1;
+EIneq . Exp ::= Exp "!=" Exp1;
+
+-- Assignment
+EAsgn . Exp2 ::= Ident "=" Exp3;
+EAsgnAdd . Exp2 ::= Ident "+=" Exp3;
+EAsgnSub . Exp2 ::= Ident "-=" Exp3;
+
+-- Condition
+ECond . Exp2 ::= Exp3 "?" Exp2 ":" Exp2;
+
+-- Float
+token Float (digit+ '.' digit+ ('e' '-'? digit+)?);
+
+-- String
+EStr . Exp15 ::= Str;
+LString . Str ::= Str String;
+LStringT . Str ::= String;
+
+separator Exp ",";
+terminator Stm "" ;
+
+coercions Exp 15 ;

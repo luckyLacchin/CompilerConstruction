@@ -1,0 +1,75 @@
+PDefs.      Program ::= [Def] ;
+terminator  Def "" ;
+
+-- Functions
+DFun.       Def ::= Type Ident "(" [Arg] ")" "{" [Stm] "}" ;
+DFunInline. Def ::= "inline" Type Ident "(" [Arg] ")" "{" [Stm] "}" ;
+separator   Arg "," ;
+
+-- Arguments
+ADeclType.  Arg ::= Type ;
+ADeclIdent. Arg ::= Type Ident ;
+ADeclInit.  Arg ::= Type Ident "=" Exp ;
+
+-- Definition with qualified constants
+QCDef.      Def ::= "using" QualConst ";" ;
+
+-- Statements
+SExp.       Stm ::= Exp ";" ;
+SWhi.       Stm ::= "while" "(" Exp ")" Stm ;
+STDef.      Stm ::= "typedef" Type Ident ";" ;
+SBlo.       Stm ::= "{" [Stm] "}" ;
+
+-- If Statements => 2 Shift Reduce Conflicts
+SIf.        Stm ::= "if" "(" Exp ")" Stm ;
+SIfEl.      Stm ::= "if" "(" Exp ")" Stm "else" Stm ;
+
+-- Return statements
+SRtrn.      Stm ::= "return" Exp ";" ;
+SRtrnVd.    Stm ::= "return" ";" ;
+
+-- Variable Declarations
+SVDecl.     Stm ::= Type Ident ";" ;
+SVDecls.    Stm ::= Type Ident "," [Ident] ";" ;
+SVInits.    Stm ::= Type Ident "=" Exp ";" ; 
+separator nonempty Ident "," ;
+terminator  Stm "" ;
+
+-- Expressions
+ELit.       Exp15 ::= Literal ;
+EStrLit.    Exp15 ::= String Exp15 ;
+EQual.      Exp15 ::= QualConst ;
+EIdentx.    Exp14 ::= Ident "[" Exp "]" ;
+EFun.       Exp14 ::= Ident "(" [Exp] ")" ;
+EProD.      Exp14 ::= Ident "." Exp14 ;
+EProA.      Exp14 ::= Ident "->" Exp14 ;
+EMult.      Exp12 ::= Exp12 "*" Exp13 ;
+EDiv.       Exp12 ::= Exp12 "/" Exp13 ;
+ERem.       Exp12 ::= Exp12 "%" Exp13 ;
+EAdd.       Exp11 ::= Exp11 "+" Exp12 ;
+ESub.       Exp11 ::= Exp11 "-" Exp12 ;
+EShiftR.    Exp10 ::= Exp10 ">>" Exp11 ;
+EShiftL.    Exp10 ::= Exp10 "<<" Exp11 ;
+EEqu.       Exp8 ::= Exp8 "==" Exp9 ;
+EIneq.      Exp8 ::= Exp8 "!=" Exp9 ;
+EAsgn.      Exp2 ::= Exp3 "=" Exp2 ;
+EAsgnAdd.   Exp2 ::= Exp3 "+=" Exp2 ;
+EAsgnSub.   Exp2 ::= Exp3 "-=" Exp2 ;
+ECond.      Exp2 ::= Exp3 "?" Exp2 ":" Exp2 ; 
+separator   Exp "," ;
+coercions   Exp 15 ;
+
+-- Qualified constants
+QuCoId.     QualConst ::= Ident ;
+QuCoRecId.  QualConst ::= QualConst "::" Ident ;
+
+-- Types
+rules       Type ::= "Integer" | "bool" | "char" | "Double" | "voIdent" | QualConst ;
+
+-- Literals
+rules       Literal ::= Integer | String | Char | Double | "-" Integer | "-" Double ;
+
+-- Comments
+comment     "#" ;
+comment     "//" ;
+comment     "/*" "*/" ;

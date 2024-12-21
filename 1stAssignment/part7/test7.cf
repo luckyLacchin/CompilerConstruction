@@ -1,0 +1,9 @@
+-- Exception Handling
+SExcept . Stm ::= "try" Stm "catch" "(" Type Ident ")" Stm ;
+
+-- Structure
+SStruct . Stm ::= "struct" Ident "{" [Type Id ";"] "}" ";" ;
+SStructInher . Stm ::= "struct" Ident ":" Ident "{" [Type Id ";"] "}" ";" ;
+
+-- Exception Throwing
+EThrow . Exp1 ::= "throw" Exp2;

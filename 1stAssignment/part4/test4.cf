@@ -1,0 +1,109 @@
+PDefs. Program ::= [Def] ;
+terminator Def "" ;
+
+-- Functions
+DFun.       Def ::= Type Id "(" [Arg] ")" "{" [Stm] "}" ;
+DFunInline. Def ::= "inline" Type Id "(" [Arg] ")" "{" [Stm] "}" ;
+separator Arg "," ;
+
+-- Arguments declararion
+ADeclType. Arg ::= Type;
+ADeclId. Arg ::= Type Id ;
+ADeclInit. Arg ::= Type Id "=" Exp ;
+-- in the upper way is cleaner?
+-- ADeclInit. Arg ::= Type Id Initialization;
+-- InitExp. Initialization ::= "=" Exp ;
+-- InitLiteral. Initialization ::= "=" Literal ;
+
+-- Definition with qualified constants
+QCDef. Def ::= "using" QualConst ";" ;
+
+-- Statements
+
+SExp.  Stm ::= Exp ";" ;
+SWhi.  Stm ::= "while" "(" Exp ")" Stm ;
+STDef. Stm ::= "typedef" Type Id ";" ;
+SBlo.  Stm ::= "{" [Stm] "}" ; -- statement block
+
+
+-- If Statements => 2 Shift Reduce Conflicts
+SIf.   Stm ::= "if" "(" Exp ")" Stm ;
+SIfE.  Stm ::= "if" "(" Exp ")" Stm Else ;
+SElIf. Else ::= "elif" "(" Exp ")" Stm Else ;
+SElse. Else ::= "else" Stm ;
+
+-- Return statements
+SReturn.     Stm ::= "return" Exp ";" ;
+SReturnVoid. Stm ::= "return" ";" ;
+
+-- Variable Declarations
+SVDecl.  Stm ::= Type Id ";" ;
+SVDecls. Stm ::= Type Id "," [Id] ";" ;
+SVInits. Stm ::= Type Id "=" Exp ";" ; 
+
+terminator Stm "" ;
+
+
+-- Expressions
+
+ELit.    Exp15 ::= Literal ;
+EStrLit. Exp15 ::= String Exp15 ; -- String literal consisting of concatenated strings
+EQual.   Exp15 ::= QualConst ; -- qualified constant
+EIdx.    Exp14 ::= Id "[" Exp "]" ; --indexing
+EFun.    Exp14 ::= Id "(" [Exp] ")" ; -- Function Call
+-- Structure Projection
+EProD. Exp14 ::= Exp15 "." Exp14 ;
+EProA. Exp14 ::= Exp15 "->" Exp14 ; --maybe this one will give me error, it gives me
+
+EMult.   Exp12 ::= Exp12 "*" Exp13 ;
+EDiv.    Exp12 ::= Exp12 "/" Exp13 ;
+ERem.    Exp12 ::= Exp12 "%" Exp13 ;
+EAdd.    Exp11 ::= Exp11 "+" Exp12 ;
+ESub.    Exp11 ::= Exp11 "-" Exp12 ;
+ENegInt. Exp11 ::= "-" Integer ;
+EShiftR. Exp10 ::= Exp10 ">>" Exp11 ;
+EShiftL. Exp10 ::= Exp10 "<<" Exp11 ;
+EEqu.    Exp8 ::= Exp8 "==" Exp9 ;
+EIneq.   Exp8 ::= Exp8 "!=" Exp9 ;
+-- Assignment
+EAsgn.    Exp2 ::= Id "=" Exp3 ;
+EAsgnAdd. Exp2 ::= Id "+=" Exp3 ;
+EAsgnSub. Exp2 ::= Id "-=" Exp3 ;
+
+ECond. Exp2 ::= Exp2 "?" Exp2 ":" Exp3 ; -- condition, to change it should it be right associative
+
+
+separator Exp "," ;
+coercions Exp 15 ;
+
+-- Qualified constants
+QualConstId. QualConst ::= Id ;
+QualConstRecId. QualConst ::= QualConst "::" Id ;
+QualConstTem. QualConst ::= QualConst "::" TemplateInst ;
+TempInst. TemplateInst ::= Id "<" [Type] ">" ;
+
+
+separator Type "," ;
+
+
+-- Types
+rules Type ::= "int" | "bool" | "char" | "double" | "void" | QualConst | Type"&" | "const" Type;
+
+-- Cst. Const ::= "const"; if we want to be more readable?
+
+-- Literals
+rules Literal ::= Integer | String | Char | Float ;
+--token Chars ('\'' ((char - ["'\\"]) | ('\\' ["'\\tnrf"])) '\'') ;
+--token Strings ('"' ((char - ["\"\\"]) | ('\\' ["\"\\tnrf"]))* '"') ;
+--token Integers (digit)+ ;
+-- Char, String & Integer give error: multiple rules
+token Float (digit+ '.' digit+ ('e' '-'? digit+)?);
+
+-- Identifier: letter followed by list of letters, digits and underscores
+token Id (letter (letter | digit | '_')*) ;
+separator nonempty Id "," ;
+
+-- Comments
+comment "#" ;
+comment "//" ;
+comment "/*" "*/" ;

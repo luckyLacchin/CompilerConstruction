@@ -1,0 +1,40 @@
+-- Defs for Testing 
+PDefs.   Program ::= [Def] ;
+terminator Def "" ;
+TType . Type ::= Ident ;
+SBlo . Stm ::= "{" [Stm] "}" ;
+terminator Stm "" ;
+SStm . Stm ::= "stm" ";" ;
+EExp . Exp15 ::= "exp" ;
+DDecl . Decl ::= "decl" ;
+DStm . Def ::= Stm ;
+SExp . Stm ::= Exp ";" ;
+ECLit . Exp15 ::= Chars ;
+coercions Exp 15 ;
+
+-- START PART 6
+
+-- Bodyless Function
+SBlessFun . Def ::= Type Ident ";" ;
+
+-- Do-While Loop
+SDoWhile . Stm ::= "do" Stm "while" "(" Exp ")" ";" ;
+
+-- For Loop
+SForLoop . Stm ::= "for" "(" Decl ";" Exp ";" Exp ")" Stm ;
+
+-- In/Decrement, dereference, and negation (right assoc)
+EInc . Exp13 ::= "++" Exp13 ;
+EDec . Exp13 ::= "--" Exp13 ;
+EDeref . Exp13 ::= "*" Exp13 ;
+ENeg . Exp13 ::= "!" Exp13 ;
+
+-- Comparisions
+ECompSma . Exp9 ::= Exp9 "<" Exp10 ;
+ECompLar . Exp9 ::= Exp9 ">" Exp10 ;
+ECompSmaEq . Exp9 ::= Exp9 "<=" Exp10 ;
+ECompLarEq . Exp9 ::= Exp9 ">=" Exp10 ;
+
+-- Character Literals
+token Chars (('\'' ((char - ["'\\"]) | ('\\' ["'\\tnrf"])) '\'') 
+            | ('"' ((char - ["\"\\"]) | ('\\' ["\"\\tnrf"])) '"')) ;

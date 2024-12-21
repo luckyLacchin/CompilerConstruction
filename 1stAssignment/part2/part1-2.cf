@@ -1,0 +1,62 @@
+PDefs. Program ::= [Def] ;
+terminator Def "" ;
+
+-- Functions
+DFun.       Def ::= Type Id "(" [Arg] ")" "{" [Stm] "}" ;
+DFunInline. Def ::= "inline" Type Id "(" [Arg] ")" "{" [Stm] "}" ;
+separator Arg "," ;
+
+-- Arguments
+ADeclType. Arg ::= Type ;
+ADeclId.   Arg ::= Type Id ;
+ADeclInit. Arg ::= Type Id "=" Exp ;
+
+-- Definition with qualified constants
+QCDef. Def ::= "using" QualConst ";" ;
+
+-- Statements
+
+SExp.  Stm ::= Exp ";" ;
+-- Return statements
+SReturn.     Stm ::= "return" Exp ";" ;
+SReturnVoid. Stm ::= "return" ";" ;
+-- Variable Declarations
+SVDecl.  Stm ::= Type Id ";" ;
+SVDecls. Stm ::= Type Id "," [Id] ";" ;
+SVInits. Stm ::= Type Id "=" Exp ";" ; 
+
+terminator Stm "" ;
+
+
+-- Expressions
+
+ELit.    Exp15 ::= Literal ;
+EQual.   Exp15 ::= QualConst ; -- qualified constant
+EShiftR. Exp10 ::= Exp10 ">>" Exp11 ;
+EShiftL. Exp10 ::= Exp10 "<<" Exp11 ;
+separator Exp "," ;
+coercions Exp 15 ;
+
+
+-- Qualified constants
+QualConstId.    QualConst ::= Id ;
+QualConstRecId. QualConst ::= QualConst "::" Id ;
+
+-- Types
+rules Type ::= "int" | "bool" | "char" | "double" | "void" | QualConst ;
+
+-- Literals
+rules Literal ::= Integers | Strings | Chars ;
+token Chars ('\'' ((char - ["'\\"]) | ('\\' ["'\\tnrf"])) '\'') ;
+token Strings ('"' ((char - ["\"\\"]) | ('\\' ["\"\\tnrf"]))* '"') ;
+token Integers (digit)+ ;
+-- naming it Char, String & Integer would give error: multiple rules
+
+-- Identifier: letter followed by list of letters, digits and underscores
+token Id (letter (letter | digit | '_')*) ;
+separator nonempty Id "," ;
+
+-- Comments
+comment "#" ;
+comment "//" ;
+comment "/*" "*/" ;

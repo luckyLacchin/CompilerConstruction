@@ -1,0 +1,71 @@
+-- Program Definition
+
+PDefs.   Program ::= [Def] ;
+terminator Def "" ;
+
+-- Function
+-- we should consider also empty body in the test 2 or later
+DFun. Def ::= Type Id "(" [Arg] ")" "{" [Stm] "}" ;
+separator Arg "," ;
+
+-- Arguments declararion
+-- ADecl. Arg ::= [Const] Type [Id] [Initialization];
+ADeclType. Arg ::= Type;
+ADeclId. Arg ::= Type Id ;
+ADeclInit. Arg ::= Type Id Initialization;
+-- maybe i should put every const combination
+ADeclConst. Arg ::= Const Type Id;
+Cst. Const ::= "const";
+InitExp. Initialization ::= "=" Exp ;
+InitLiteral. Initialization ::= "=" Literal ;
+
+--Statements
+Sexp. Stm ::= Exp ";" ;
+SVarDecl. Stm ::= Var ";" ;
+-- this is provvisory, it should be change in the 2nd file
+VarDec. Var ::= ;
+-- Returns
+SReturn.     Stm ::= "return" Exp ";" ;
+SReturnVoid. Stm ::= "return" ";" ;
+terminator Stm "" ;
+
+-- Expressions
+Elit. Exp15 ::= Literal ;
+EQual. Exp15 ::= QualConst ;
+EShiftR. Exp10 ::= Exp10 ">>" Exp11 ;
+EShiftL. Exp10 ::= Exp10 "<<" Exp11 ;
+coercions Exp 15 ;
+separator Exp "," ;
+
+-- Qualified constants
+QualConstId. QualConst ::= Id ;
+QualConstRecId. QualConst ::= QualConst "::" Id ;
+QualConstTem. QualConst ::= QualConst "::" TemplateInst ;
+TempInst. TemplateInst ::= Id "<" TypeList ">" ;
+TypList. TypeList ::= Type ;
+TypeListRec. TypeList ::= Type "," TypeList ;
+
+-- Types
+Tbool. Type ::= "bool" ;
+Tdouble. Type ::= "double" ;
+Tint. Type ::= "int" ;
+Tvoid. Type ::= "void" ;
+Tchar. Type ::= "char" ;
+PlainIdent. Type ::= Id ;
+
+-- Literals
+-- i could write also token Literal (digit | letter)* but we don't manage the double-quoted literals
+rules Literal ::= Integers | Strings | Chars ;
+token Chars ('\'' ((char - ["'\\"]) | ('\\' ["'\\tnrf"])) '\'') ;
+token Strings ('"' ((char - ["\"\\"]) | ('\\' ["\"\\tnrf"]))* '"') ;
+token Integers (digit)+ ;
+
+-- Identifiers
+token Id (letter (letter | digit | '_')*) ;
+separator nonempty Id "," ;
+
+-- Comments
+comment "//" ;
+comment "/*" "*/" ;
+comment "#" ;
+

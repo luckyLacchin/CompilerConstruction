@@ -1,0 +1,150 @@
+--- Programs ---
+PDefs.      Program ::= [Def] ;
+
+
+--- Comments ---
+comment     "#" ;
+comment     "//" ;
+comment     "/*" "*/" ;
+
+
+--- Definitions ---
+DFun.       Def ::= Type Ident "(" [Arg] ")" Body ;
+DFunInline. Def ::= "inline" Type Ident "(" [Arg] ")" Body ;
+rules       Body ::= ";" | "{" [Stm] "}" ;
+
+DTyDef.     Def ::= Typedef ;
+DVDecl.     Def ::= Decl ";" ;
+DStruct.    Def ::= Struct ;
+DUseQC.     Def ::= "using" QualConst ";" ;
+
+
+--- Statements ---
+SExp.       Stm ::= Exp ";" ;
+SVDecl.     Stm ::= Decl ";" ;
+SStru.      Stm ::= Struct ;
+STDef.      Stm ::= Typedef ;
+
+SRtrnVoid.  Stm ::= "return" ";" ;
+SRtrn.      Stm ::= "return" Exp ";" ;
+
+SWhile.     Stm ::= "while" "(" Exp ")" Stm ;
+SDoWhile.   Stm ::= "do" Stm "while" "(" Exp ")" ";" ;
+SForLoop.   Stm ::= "for" "(" Decl ";" Exp ";" Exp ")" Stm ;
+
+SIf.        Stm ::= "if" "(" Exp ")" Stm ;
+SIfE.       Stm ::= "if" "(" Exp ")" Stm "else" Stm ;
+
+SExcept.    Stm ::= "try" Stm "catch" "(" Arg ")" Stm ;
+
+SBlock.     Stm ::= "{" [Stm] "}" ;
+
+
+--- Expressions ---
+ELiteral.   Exp15 ::= Literal ;
+EQualConst. Exp15 ::= QualConst ;
+EString.    Exp15 ::= String Exp15 ;
+
+EIndexing.  Exp14 ::= Exp14 "[" Exp "]" ;
+EFunCall.   Exp14 ::= Exp14 "(" [Exp] ")" ;
+EIncL.      Exp14 ::= Exp14 "++" ;
+EDecL.      Exp14 ::= Exp14 "--" ;
+
+EStrcProjD. Exp13 ::= Exp14 "." Exp14 ;
+EStrcProjA. Exp13 ::= Exp14 "->" Exp14 ;
+
+EIncR.      Exp13 ::= "++" Exp13 ;
+EDecR.      Exp13 ::= "--" Exp13 ;
+EDeref.     Exp13 ::= "*" Exp13 ;
+ENeg.       Exp13 ::= "!" Exp13 ;
+EUnPlus.    Exp13 ::= "+" Exp13 ;
+EUnMin.     Exp13 ::= "-" Exp13 ; 
+
+EMult.      Exp12 ::= Exp12 "*" Exp13 ;
+EDiv.       Exp12 ::= Exp12 "/" Exp13 ;
+ERem.       Exp12 ::= Exp12 "%" Exp13 ;
+
+EAdd.       Exp11 ::= Exp11 "+" Exp12 ;
+ESub.       Exp11 ::= Exp11 "-" Exp12 ;
+
+EShiftR.    Exp10 ::= Exp10 ">>" Exp11 ;
+EShiftL.    Exp10 ::= Exp10 "<<" Exp11 ;
+
+ECompThree. Exp9 ::= Exp9 "<=>" Exp10 ;
+ECompSma.   Exp9 ::= Exp9 "<" Exp10 ;
+ECompLar.   Exp9 ::= Exp9 ">" Exp10 ; 
+ECompSmaEq. Exp9 ::= Exp9 "<=" Exp10 ;
+ECompLarEq. Exp9 ::= Exp9 ">=" Exp10 ;
+
+EEqu.       Exp8 ::= Exp8 "==" Exp9 ;
+EIneq.      Exp8 ::= Exp8 "!=" Exp9 ;
+
+EConj.      Exp4 ::= Exp4 "&&" Exp5 ;
+
+EDisj.      Exp3 ::= Exp3 "||" Exp4 ;
+
+EAsgn.      Exp2 ::= Exp3 "=" Exp2 ;
+EAsgnAdd.   Exp2 ::= Exp3 "+=" Exp2 ;
+EAsgnSub.   Exp2 ::= Exp3 "-=" Exp2 ;
+
+ECond.      Exp2 ::= Exp3 "?" Exp2 ":" Exp2 ;
+
+EThrow.     Exp1 ::= "throw" Exp2 ;
+
+coercions   Exp 15 ;
+
+
+-- Qualified Constants and Template Instantiations ---
+QQualCnst.  QualConst ::= [ConstNames] ;
+TTempInst.  TempInst ::= Ident "<" [Type] ">" ;
+rules       ConstNames ::= Ident | TempInst ;
+
+
+--- Arguments ---
+AArg.       VArg ::= Type ;
+AArgVar.    VArg ::= Type Var ;
+AConstArg.  CArg ::= "const" VArg ;
+rules       Arg ::= VArg | CArg ;
+
+
+--- Variable Declarations and Initalizations ---
+ADeclId.    VDecl ::= Type [Var] ;
+rules       CDecl ::= VDecl | "const" VDecl ;
+rules       Decl ::= CDecl | "constinit" CDecl ;
+
+
+--- Variables ---
+rules       Var ::= Ident | Ident "=" Exp ;
+
+
+--- Typedefs ---
+TTypedef.   Typedef ::= "typedef" Type Ident ";" ;
+
+
+--- Structs ---
+SStrct.     Struct ::= "struct" Ident "{" [Decl] "}" ";" ;
+SStrctChld. Struct ::= "struct" Ident ":" [Type] "{" [Decl] "}" ";" ;
+
+
+--- Types ---
+rules       Type ::= TType "&" | TType ;
+rules       TType ::= "int" | "bool" | "char" | "double" | "void" | QualConst ;
+
+
+--- Literals ---
+rules       Literal ::= Integer | String | Char | Double ;
+
+
+--- Separators ---
+separator Arg "," ;
+separator Stm "" ;
+separator Exp "," ;
+separator nonempty Var "," ;
+separator nonempty Type "," ;
+separator nonempty Ident "," ;
+separator nonempty ConstNames "::" ;
+
+
+--- Terminators ---
+terminator Def "" ;
+terminator Decl ";" ;
